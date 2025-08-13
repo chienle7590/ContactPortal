@@ -1,0 +1,186 @@
+<template>
+  <div class="portal-container">
+      <!-- Header -->
+      <div class="portal-header">
+          <lightning-icon icon-name="standard:contact" size="medium" class="header-icon"></lightning-icon>
+          <h1 class="header-title">Contact Portal</h1>
+          <p class="header-subtitle">Access your contact information securely</p>
+      </div>
+
+      <!-- Step 1: Email Verification -->
+      <div if:true={showEmailStep} class="step-container">
+          <div class="step-header">
+              <lightning-icon icon-name="utility:email" size="small"></lightning-icon>
+              <h2>Step 1: Verify Your Email</h2>
+          </div>
+          
+          <lightning-card class="verification-card">
+              <div class="card-content">
+                  <p class="instruction-text">
+                      Enter your email address to receive a verification code
+                  </p>
+                  
+                  <lightning-input
+                      type="email"
+                      label="Email Address"
+                      value={email}
+                      onchange={handleEmailChange}
+                      placeholder="Enter your email address"
+                      class="email-input"
+                      required>
+                  </lightning-input>
+                  
+                  <div class="button-container">
+                      <lightning-button
+                          variant="brand"
+                          label="Send Verification Code"
+                          onclick={sendVerificationCode}
+                          disabled={isLoading}
+                          class="send-button">
+                      </lightning-button>
+                  </div>
+              </div>
+          </lightning-card>
+      </div>
+
+      <!-- Step 2: Code Verification -->
+      <div if:true={showCodeStep} class="step-container">
+          <div class="step-header">
+              <lightning-icon icon-name="utility:lock" size="small"></lightning-icon>
+              <h2>Step 2: Enter Verification Code</h2>
+          </div>
+          
+          <lightning-card class="verification-card">
+              <div class="card-content">
+                  <p class="instruction-text">
+                      We've sent a 6-digit code to <strong>{email}</strong>
+                  </p>
+                  
+                  <lightning-input
+                      type="text"
+                      label="Verification Code"
+                      value={verificationCode}
+                      onchange={handleCodeChange}
+                      placeholder="Enter 6-digit code"
+                      maxlength="6"
+                      class="code-input"
+                      required>
+                  </lightning-input>
+                  
+                  <div class="button-container">
+                      <lightning-button
+                          variant="brand"
+                          label="Verify Code"
+                          onclick={verifyCode}
+                          disabled={isLoading}
+                          class="verify-button">
+                      </lightning-button>
+                      
+                      <lightning-button
+                          variant="neutral"
+                          label="Back to Email"
+                          onclick={goBackToEmail}
+                          class="back-button">
+                      </lightning-button>
+                  </div>
+                  
+                  <div class="resend-container">
+                      <p class="resend-text">
+                          Didn't receive the code? 
+                          <lightning-button
+                              variant="base"
+                              label="Resend Code"
+                              onclick={resendCode}
+                              disabled={isLoading}
+                              class="resend-link">
+                          </lightning-button>
+                      </p>
+                  </div>
+              </div>
+          </lightning-card>
+      </div>
+
+      <!-- Step 3: Contact Information Display -->
+      <div if:true={showContactInfo} class="step-container">
+          <div class="step-header">
+              <lightning-icon icon-name="utility:success" size="small"></lightning-icon>
+              <h2>Your Contact Information</h2>
+          </div>
+          
+          <lightning-card class="contact-card">
+              <div class="contact-header">
+                  <lightning-avatar
+                      src=""
+                      fallback-icon-name="standard:contact"
+                      size="large"
+                      class="contact-avatar">
+                  </lightning-avatar>
+                  <div class="contact-name">
+                      <h3>{contactData.Name}</h3>
+                      <p class="account-name">{contactData.AccountName}</p>
+                  </div>
+              </div>
+              
+              <div class="contact-details">
+                  <div class="detail-row">
+                      <lightning-icon icon-name="utility:email" size="x-small"></lightning-icon>
+                      <span class="detail-label">Email:</span>
+                      <span class="detail-value">{contactData.Email}</span>
+                  </div>
+                  
+                  <div if:true={contactData.Phone} class="detail-row">
+                      <lightning-icon icon-name="utility:phone_portrait" size="x-small"></lightning-icon>
+                      <span class="detail-label">Phone:</span>
+                      <span class="detail-value">{contactData.Phone}</span>
+                  </div>
+                  
+                  <div if:true={contactData.MailingAddress} class="detail-row">
+                      <lightning-icon icon-name="utility:location" size="x-small"></lightning-icon>
+                      <span class="detail-label">Address:</span>
+                      <span class="detail-value">{contactData.MailingAddress}</span>
+                  </div>
+              </div>
+              
+              <div class="action-buttons">
+                  <lightning-button
+                      variant="neutral"
+                      label="Access Another Account"
+                      onclick={startOver}
+                      class="start-over-button">
+                  </lightning-button>
+              </div>
+          </lightning-card>
+      </div>
+
+      <!-- Loading Spinner -->
+      <div if:true={isLoading} class="loading-container">
+          <lightning-spinner alternative-text="Loading..." size="medium"></lightning-spinner>
+      </div>
+
+      <!-- Error Messages -->
+      <div if:true={errorMessage} class="error-container">
+          <lightning-card class="error-card">
+              <div class="error-content">
+                  <lightning-icon icon-name="utility:error" size="small" class="error-icon"></lightning-icon>
+                  <p class="error-message">{errorMessage}</p>
+                  <lightning-button
+                      variant="neutral"
+                      label="Dismiss"
+                      onclick={clearError}
+                      class="dismiss-button">
+                  </lightning-button>
+              </div>
+          </lightning-card>
+      </div>
+
+      <!-- Success Messages -->
+      <div if:true={successMessage} class="success-container">
+          <lightning-card class="success-card">
+              <div class="success-content">
+                  <lightning-icon icon-name="utility:success" size="small" class="success-icon"></lightning-icon>
+                  <p class="success-message">{successMessage}</p>
+              </div>
+          </lightning-card>
+      </div>
+  </div>
+</template>

@@ -1,0 +1,135 @@
+<apex:page showHeader="false" standardStylesheets="false" applyBodyTag="false" applyHtmlTag="false">
+
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Contact Portal</title>
+  
+  <!-- Lightning Design System -->
+  <apex:slds />
+  
+  <!-- Custom Styles -->
+  <style>
+      body {
+          margin: 0;
+          padding: 0;
+          font-family: 'Salesforce Sans', Arial, sans-serif;
+          background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+          min-height: 100vh;
+      }
+      
+      .portal-wrapper {
+          min-height: 100vh;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          padding: 20px;
+      }
+      
+      .portal-container {
+          background: white;
+          border-radius: 12px;
+          box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+          overflow: hidden;
+          max-width: 800px;
+          width: 100%;
+      }
+      
+      .portal-header {
+          background: linear-gradient(135deg, #1589ee 0%, #0070d2 100%);
+          color: white;
+          padding: 40px 30px;
+          text-align: center;
+      }
+      
+      .portal-header h1 {
+          margin: 0;
+          font-size: 2.5rem;
+          font-weight: 300;
+      }
+      
+      .portal-header p {
+          margin: 10px 0 0 0;
+          font-size: 1.1rem;
+          opacity: 0.9;
+      }
+      
+      .portal-content {
+          padding: 0;
+      }
+      
+      /* Loading fallback */
+      .loading-fallback {
+          padding: 60px 30px;
+          text-align: center;
+          color: #666;
+      }
+      
+      .loading-spinner {
+          border: 3px solid #f3f3f3;
+          border-top: 3px solid #1589ee;
+          border-radius: 50%;
+          width: 40px;
+          height: 40px;
+          animation: spin 1s linear infinite;
+          margin: 0 auto 20px auto;
+      }
+      
+      @keyframes spin {
+          0% { transform: rotate(0deg); }
+          100% { transform: rotate(360deg); }
+      }
+      
+      /* Responsive */
+      @media (max-width: 768px) {
+          .portal-wrapper {
+              padding: 10px;
+          }
+          
+          .portal-header {
+              padding: 30px 20px;
+          }
+          
+          .portal-header h1 {
+              font-size: 2rem;
+          }
+      }
+  </style>
+</head>
+<body>
+  <div class="portal-wrapper">
+      <div class="portal-container">
+          <div class="portal-header">
+              <h1>Contact Portal</h1>
+              <p>Secure access to your contact information</p>
+          </div>
+          
+          <div class="portal-content">
+              <!-- Lightning Web Component -->
+              <c:contactPortal></c:contactPortal>
+              
+              <!-- Fallback content if LWC fails to load -->
+              <div class="loading-fallback" style="display: none;" id="fallback">
+                  <div class="loading-spinner"></div>
+                  <p>Loading Contact Portal...</p>
+                  <p><small>If this page doesn't load, please contact support.</small></p>
+              </div>
+          </div>
+      </div>
+  </div>
+  
+  <script>
+      // Show fallback if LWC doesn't load within 5 seconds
+      setTimeout(function() {
+          var lwcElement = document.querySelector('c-contact-portal');
+          var fallback = document.getElementById('fallback');
+          
+          if (!lwcElement || lwcElement.children.length === 0) {
+              fallback.style.display = 'block';
+          }
+      }, 5000);
+  </script>
+</body>
+</html>
+</apex:page>

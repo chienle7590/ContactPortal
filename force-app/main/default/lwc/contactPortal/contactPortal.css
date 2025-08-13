@@ -1,0 +1,330 @@
+.portal-container {
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 20px;
+  font-family: 'Salesforce Sans', Arial, sans-serif;
+}
+
+/* Header Styles */
+.portal-header {
+  text-align: center;
+  margin-bottom: 40px;
+  padding: 30px 20px;
+  background: linear-gradient(135deg, #1589ee 0%, #0070d2 100%);
+  border-radius: 12px;
+  color: white;
+  box-shadow: 0 4px 12px rgba(21, 137, 238, 0.3);
+}
+
+.header-icon {
+  margin-bottom: 15px;
+}
+
+.header-title {
+  font-size: 2.5rem;
+  font-weight: 300;
+  margin: 0 0 10px 0;
+  letter-spacing: -0.5px;
+}
+
+.header-subtitle {
+  font-size: 1.1rem;
+  opacity: 0.9;
+  margin: 0;
+  font-weight: 300;
+}
+
+/* Step Styles */
+.step-container {
+  margin-bottom: 30px;
+}
+
+.step-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 20px;
+  padding-bottom: 10px;
+  border-bottom: 2px solid #e5e5e5;
+}
+
+.step-header lightning-icon {
+  margin-right: 12px;
+  color: #1589ee;
+}
+
+.step-header h2 {
+  font-size: 1.5rem;
+  font-weight: 400;
+  margin: 0;
+  color: #333;
+}
+
+/* Card Styles */
+.verification-card,
+.contact-card,
+.error-card,
+.success-card {
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  border: none;
+}
+
+.card-content {
+  padding: 30px;
+}
+
+.instruction-text {
+  font-size: 1rem;
+  color: #666;
+  margin-bottom: 25px;
+  line-height: 1.5;
+}
+
+/* Input Styles */
+.email-input,
+.code-input {
+  margin-bottom: 25px;
+}
+
+.email-input lightning-input,
+.code-input lightning-input {
+  --slds-c-input-sizing-border: 2px solid #e5e5e5;
+  --slds-c-input-sizing-border-focus: 2px solid #1589ee;
+}
+
+/* Button Styles */
+.button-container {
+  display: flex;
+  gap: 15px;
+  margin-top: 20px;
+}
+
+.send-button,
+.verify-button {
+  flex: 1;
+  --slds-c-button-brand-color-background: #1589ee;
+  --slds-c-button-brand-color-background-hover: #0070d2;
+}
+
+.back-button {
+  flex: 1;
+}
+
+.start-over-button {
+  width: 100%;
+  margin-top: 20px;
+}
+
+/* Resend Section */
+.resend-container {
+  text-align: center;
+  margin-top: 25px;
+  padding-top: 20px;
+  border-top: 1px solid #e5e5e5;
+}
+
+.resend-text {
+  color: #666;
+  margin: 0;
+}
+
+.resend-link {
+  color: #1589ee;
+  text-decoration: none;
+  background: none;
+  border: none;
+  padding: 0;
+  margin-left: 5px;
+}
+
+.resend-link:hover {
+  text-decoration: underline;
+}
+
+/* Contact Information Styles */
+.contact-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 30px;
+  padding: 25px;
+  background: #f8f9fa;
+  border-radius: 8px;
+}
+
+.contact-avatar {
+  margin-right: 20px;
+}
+
+.contact-name h3 {
+  font-size: 1.5rem;
+  font-weight: 500;
+  margin: 0 0 5px 0;
+  color: #333;
+}
+
+.account-name {
+  color: #666;
+  margin: 0;
+  font-size: 1rem;
+}
+
+.contact-details {
+  padding: 0 25px 25px 25px;
+}
+
+.detail-row {
+  display: flex;
+  align-items: center;
+  margin-bottom: 15px;
+  padding: 12px 0;
+  border-bottom: 1px solid #f1f1f1;
+}
+
+.detail-row:last-child {
+  border-bottom: none;
+  margin-bottom: 0;
+}
+
+.detail-row lightning-icon {
+  margin-right: 12px;
+  color: #666;
+}
+
+.detail-label {
+  font-weight: 500;
+  color: #333;
+  min-width: 80px;
+  margin-right: 15px;
+}
+
+.detail-value {
+  color: #666;
+  flex: 1;
+}
+
+.action-buttons {
+  padding: 0 25px 25px 25px;
+  border-top: 1px solid #e5e5e5;
+  padding-top: 25px;
+}
+
+/* Loading Styles */
+.loading-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 40px;
+}
+
+/* Message Styles */
+.error-container,
+.success-container {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  z-index: 1000;
+  max-width: 400px;
+}
+
+.error-card {
+  background-color: #fef7f7;
+  border-left: 4px solid #d73a49;
+}
+
+.success-card {
+  background-color: #f6ffed;
+  border-left: 4px solid #52c41a;
+}
+
+.error-content,
+.success-content {
+  display: flex;
+  align-items: center;
+  padding: 15px 20px;
+}
+
+.error-icon {
+  color: #d73a49;
+  margin-right: 12px;
+}
+
+.success-icon {
+  color: #52c41a;
+  margin-right: 12px;
+}
+
+.error-message,
+.success-message {
+  flex: 1;
+  margin: 0;
+  font-size: 0.9rem;
+}
+
+.dismiss-button {
+  margin-left: 15px;
+  --slds-c-button-neutral-color-background: transparent;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .portal-container {
+      padding: 15px;
+  }
+  
+  .header-title {
+      font-size: 2rem;
+  }
+  
+  .card-content {
+      padding: 20px;
+  }
+  
+  .button-container {
+      flex-direction: column;
+  }
+  
+  .contact-header {
+      flex-direction: column;
+      text-align: center;
+  }
+  
+  .contact-avatar {
+      margin-right: 0;
+      margin-bottom: 15px;
+  }
+  
+  .detail-row {
+      flex-direction: column;
+      align-items: flex-start;
+  }
+  
+  .detail-label {
+      margin-bottom: 5px;
+      min-width: auto;
+  }
+  
+  .error-container,
+  .success-container {
+      position: relative;
+      top: auto;
+      right: auto;
+      margin-bottom: 20px;
+      max-width: none;
+  }
+}
+
+/* Animation for smooth transitions */
+.step-container {
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from {
+      opacity: 0;
+      transform: translateY(10px);
+  }
+  to {
+      opacity: 1;
+      transform: translateY(0);
+  }
+}
