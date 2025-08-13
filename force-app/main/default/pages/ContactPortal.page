@@ -1,135 +1,663 @@
-<apex:page showHeader="false" standardStylesheets="false" applyBodyTag="false" applyHtmlTag="false">
-
-<html lang="en">
+<apex:page controller="ContactPortalController" showHeader="false" sidebar="false" cache="false" docType="html-5.0">
 <head>
+  <title>Contact Self-Service Portal</title>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Contact Portal</title>
-  
-  <!-- Lightning Design System -->
-  <apex:slds />
-  
-  <!-- Custom Styles -->
   <style>
-      body {
-          margin: 0;
-          padding: 0;
-          font-family: 'Salesforce Sans', Arial, sans-serif;
-          background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-          min-height: 100vh;
-      }
-      
-      .portal-wrapper {
-          min-height: 100vh;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          padding: 20px;
-      }
-      
-      .portal-container {
-          background: white;
-          border-radius: 12px;
-          box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
-          overflow: hidden;
-          max-width: 800px;
-          width: 100%;
-      }
-      
-      .portal-header {
-          background: linear-gradient(135deg, #1589ee 0%, #0070d2 100%);
-          color: white;
-          padding: 40px 30px;
-          text-align: center;
-      }
-      
-      .portal-header h1 {
-          margin: 0;
-          font-size: 2.5rem;
-          font-weight: 300;
-      }
-      
-      .portal-header p {
-          margin: 10px 0 0 0;
-          font-size: 1.1rem;
-          opacity: 0.9;
-      }
-      
-      .portal-content {
-          padding: 0;
-      }
-      
-      /* Loading fallback */
-      .loading-fallback {
-          padding: 60px 30px;
-          text-align: center;
-          color: #666;
-      }
-      
-      .loading-spinner {
-          border: 3px solid #f3f3f3;
-          border-top: 3px solid #1589ee;
-          border-radius: 50%;
-          width: 40px;
-          height: 40px;
-          animation: spin 1s linear infinite;
-          margin: 0 auto 20px auto;
-      }
-      
-      @keyframes spin {
-          0% { transform: rotate(0deg); }
-          100% { transform: rotate(360deg); }
-      }
-      
-      /* Responsive */
-      @media (max-width: 768px) {
-          .portal-wrapper {
-              padding: 10px;
-          }
-          
-          .portal-header {
-              padding: 30px 20px;
-          }
-          
-          .portal-header h1 {
-              font-size: 2rem;
-          }
-      }
+    :root {
+      --bg: #0f1115;
+      --panel: #1c222b;
+      --panel-alt: #252e39;
+      --accent: #3b82f6;
+      --accent-hover: #2563eb;
+      --danger: #dc2626;
+      --success: #16a34a;
+      --warn: #f59e0b;
+      --text: #e5e7eb;
+      --text-dim: #9ca3af;
+      --border: #334155;
+      --radius: 10px;
+      --focus: 0 0 0 3px rgba(59,130,246,0.35);
+      font-family: system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,sans-serif;
+    }
+    * { box-sizing: border-box; }
+    body, html { margin: 0; padding: 0; background: var(--bg); color: var(--text); }
+    h1,h2,h3 { margin: 0 0 .75rem; font-weight: 600; letter-spacing: .5px; }
+    a { color: var(--accent); }
+    .container {
+      max-width: 840px;
+      margin: 40px auto 80px;
+      padding: 0 20px;
+    }
+    .grid { display: grid; grid-template-columns: 1fr; gap: 22px; }
+    @media (min-width: 920px) { .grid-2 { grid-template-columns: 1fr 1fr; } }
+    .card {
+      background: linear-gradient(145deg, var(--panel), var(--panel-alt));
+      border: 1px solid var(--border);
+      padding: 22px 24px 26px;
+      border-radius: var(--radius);
+      position: relative;
+      overflow: hidden;
+    }
+    .card h2 { font-size: 1.15rem; display: flex; align-items: center; gap: .55rem; }
+    .badge {
+      background: var(--accent); color: #fff; font-size: .65rem;
+      padding: 3px 7px 3px; border-radius: 6px; letter-spacing: .5px; text-transform: uppercase;
+    }
+    label {
+      font-size: .8rem; font-weight: 600; color: var(--text-dim);
+      text-transform: uppercase; letter-spacing: .5px; display: block; margin-bottom: 6px;
+    }
+    input {
+      width: 100%; padding: 11px 14px; background: #10151c; color: var(--text);
+      border: 1px solid var(--border); border-radius: 8px; font-size: .95rem;
+      transition: border .2s, background .2s;
+    }
+    input:focus { outline: none; border-color: var(--accent); box-shadow: var(--focus); }
+    input[disabled], button[disabled] { opacity: .55; cursor: not-allowed; }
+    .fields-inline { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+    .mt { margin-top: 16px; } .mt-lg { margin-top: 28px; }
+    .btn-row { 
+      display: flex; 
+      flex-wrap: wrap; 
+      gap: 12px; 
+      margin-top: 18px;
+      align-items: center;
+    }
+    button {
+      background: var(--accent); border: 1px solid var(--accent); color: #fff;
+      padding: 11px 20px 12px; font-size: .9rem; font-weight: 600;
+      text-transform: uppercase; letter-spacing: .75px; border-radius: 8px;
+      cursor: pointer; transition: background .18s, transform .18s; position: relative;
+      min-width: 120px;
+    }
+    button.secondary { background: #253040; border-color: #314153; }
+    button.danger { background: var(--danger); border-color: var(--danger); }
+    button:hover:not([disabled]) { background: var(--accent-hover); }
+    button.secondary:hover:not([disabled]) { background: #2e3b4d; }
+    button.danger:hover:not([disabled]) { background: #b91c1c; }
+    button:active:not([disabled]) { transform: translateY(1px); }
+    .status {
+      margin-top: 14px; font-size: .85rem; line-height: 1.35; padding: 10px 14px 11px;
+      border: 1px solid var(--border); border-radius: 8px; background: #141b23; display: none;
+    }
+    .status.show { display: block; }
+    .status.success { 
+      border-color: var(--success); 
+      color: #4ade80; 
+      background: rgba(22, 163, 74, 0.1);
+    }
+    .status.error { 
+      border-color: var(--danger); 
+      color: #fca5a5;
+      background: rgba(220, 38, 38, 0.1);
+      font-weight: 600;
+    }
+    .status.warn { 
+      border-color: var(--warn); 
+      color: #fbbf24;
+      background: rgba(245, 158, 11, 0.1);
+    }
+    .hidden { display: none !important; }
+    .divider {
+      height: 1px; background: linear-gradient(90deg, rgba(255,255,255,0), var(--border), rgba(255,255,255,0));
+      margin: 26px 0 18px;
+    }
+    .token-chip {
+      background: #283445; padding: 6px 10px; border-radius: 6px; font-size: .7rem;
+      color: #9ca3af; margin-left: auto; max-width: 280px; overflow: hidden;
+      text-overflow: ellipsis; white-space: nowrap;
+    }
+    .flex { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+    .spinner {
+      width: 18px; height: 18px; border: 3px solid rgba(255,255,255,0.15);
+      border-top-color: var(--accent); border-radius: 50%; animation: spin .85s linear infinite;
+      display: inline-block; vertical-align: middle;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .inline { display: inline-flex; align-items: center; gap: 8px; }
+    .pending-box {
+      margin-top: 14px; background: #1d2835; padding: 14px 14px 18px;
+      border: 1px solid #334358; border-radius: 8px;
+    }
+    code {
+      background: #1b2430; padding: 2px 6px; border-radius: 5px;
+      font-size: .8rem; color: #93c5fd;
+    }
+    
+    @media (max-width: 768px) {
+      .fields-inline { grid-template-columns: 1fr; }
+      .btn-row { flex-direction: column; }
+      button { width: 100%; }
+    }
   </style>
 </head>
 <body>
-  <div class="portal-wrapper">
-      <div class="portal-container">
-          <div class="portal-header">
-              <h1>Contact Portal</h1>
-              <p>Secure access to your contact information</p>
-          </div>
-          
-          <div class="portal-content">
-              <!-- Lightning Web Component -->
-              <c:contactPortal></c:contactPortal>
-              
-              <!-- Fallback content if LWC fails to load -->
-              <div class="loading-fallback" style="display: none;" id="fallback">
-                  <div class="loading-spinner"></div>
-                  <p>Loading Contact Portal...</p>
-                  <p><small>If this page doesn't load, please contact support.</small></p>
-              </div>
-          </div>
+  <div class="container">
+    <h1>Contact Self-Service Portal</h1>
+    <p style="color:var(--text-dim);max-width:720px;">
+      Use your email to receive a verification code, view your contact details, and update them securely.
+      For demo purposes, verification codes may be echoed in responses.
+    </p>
+
+    <div class="grid">
+      <!-- STEP 1: Request Verification Code -->
+      <div class="card" id="card-request">
+        <h2><span>1. Request Code</span><span class="badge">Step</span></h2>
+        <label for="emailInput">Email Address</label>
+        <input type="email" id="emailInput" placeholder="you@example.com" autocomplete="email" />
+        <div class="btn-row">
+          <button id="btnSendCode">Send Code</button>
+          <button id="btnClearEmail" class="secondary" type="button">Clear</button>
+        </div>
+        <div id="statusRequest" class="status"></div>
       </div>
+
+      <!-- STEP 2: Verify Code -->
+      <div class="card" id="card-verify">
+        <h2><span>2. Verify Code &amp; Load Contact</span><span class="badge">Step</span></h2>
+        <div class="grid-2">
+          <div>
+            <label for="verifyEmail">Email</label>
+            <input type="email" id="verifyEmail" placeholder="you@example.com" autocomplete="email" />
+          </div>
+          <div>
+            <label for="verifyCode">Code</label>
+            <input type="text" id="verifyCode" placeholder="6-digit code" maxlength="6" autocomplete="one-time-code" />
+          </div>
+        </div>
+        <div class="btn-row">
+          <button id="btnVerify">Verify &amp; Retrieve Contact</button>
+          <button id="btnPasteCode" type="button" class="secondary">Paste Code</button>
+        </div>
+        <div id="statusVerify" class="status"></div>
+      </div>
+
+      <!-- STEP 3: Contact Details -->
+      <div class="card hidden" id="card-contact">
+        <div class="flex">
+          <h2 style="margin-right:auto;">3. Contact Details</h2>
+          <div class="token-chip" id="tokenChip" title="Session token (truncated)"></div>
+        </div>
+        <div class="fields-inline">
+          <div>
+            <label for="firstName">First Name</label>
+            <input id="firstName" type="text" maxlength="80" />
+          </div>
+          <div>
+            <label for="lastName">Last Name</label>
+            <input id="lastName" type="text" maxlength="80" />
+          </div>
+        </div>
+        <div class="mt">
+          <label for="emailField">Email</label>
+          <input id="emailField" type="email" maxlength="100" />
+        </div>
+        
+        <div class="btn-row">
+          <button id="btnUpdate" type="button">Save Changes</button>
+          <button id="btnResetFields" class="secondary" type="button">Reset Fields</button>
+          <button id="btnLogout" class="danger" type="button">Logout</button>
+        </div>
+        
+        <div id="statusUpdate" class="status"></div>
+
+        <div id="pendingEmailBlock" class="pending-box hidden">
+          <h3 style="margin:0 0 .6rem;font-size:.95rem;">Email Change Verification</h3>
+          <p style="margin:.2rem 0 .9rem;color:var(--text-dim);font-size:.8rem;">
+            A verification code was sent. Enter it below to confirm the new email.
+          </p>
+          <div class="grid-2">
+            <div>
+              <label for="pendingNewEmail">New Email</label>
+              <input id="pendingNewEmail" type="email" disabled="disabled" />
+            </div>
+            <div>
+              <label for="pendingEmailCode">Verification Code</label>
+              <input id="pendingEmailCode" type="text" maxlength="6" placeholder="6-digit" />
+            </div>
+          </div>
+          <div class="btn-row">
+            <button id="btnConfirmEmail">Confirm Email Change</button>
+            <button id="btnCancelPending" class="secondary" type="button">Dismiss</button>
+          </div>
+          <div id="statusEmailConfirm" class="status"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="divider"></div>
+    <p style="font-size:.7rem;color:var(--text-dim);">
+      RemoteActions used:
+      <code>sendVerificationCodeRemote</code>,
+      <code>verifyAndGetContactRemote</code>,
+      <code>updateContactRemote</code>,
+      <code>confirmEmailChangeRemote</code>
+    </p>
   </div>
-  
+
   <script>
-      // Show fallback if LWC doesn't load within 5 seconds
-      setTimeout(function() {
-          var lwcElement = document.querySelector('c-contact-portal');
-          var fallback = document.getElementById('fallback');
-          
-          if (!lwcElement || lwcElement.children.length === 0) {
-              fallback.style.display = 'block';
+    // ========= Helper Shortcuts =========
+    function $(id){ return document.getElementById(id); }
+
+    function showStatus(el, message, type){
+      if(!el) return;
+      el.className = 'status show' + (type ? ' ' + type : '');
+      el.textContent = message;
+    }
+    
+    function clearStatus(el){
+      if(!el) return;
+      el.className = 'status';
+      el.textContent = '';
+    }
+    
+    function btnWorking(btn, working){
+      if(!btn) return;
+      if(working){
+        btn.disabled = true;
+        btn.dataset.orig = btn.textContent;
+        btn.innerHTML = '<span class="spinner"></span>&nbsp;' + btn.textContent;
+      } else {
+        btn.disabled = false;
+        if(btn.dataset.orig) btn.textContent = btn.dataset.orig;
+      }
+    }
+    
+    function validateEmailFormat(v){
+      return /^[a-z0-9._%+\-]+@[a-z0-9.\-]+\.[a-z]{2,}$/i.test(v || '');
+    }
+
+    // ========= Enhanced Remote Action Wrapper =========
+    function remoteCall(fn, args, callback){
+      try {
+        if(typeof Visualforce === 'undefined' || !Visualforce.remoting || !Visualforce.remoting.Manager){
+          callback({ success:false, message: 'Visualforce remoting not available' });
+          return;
+        }
+        
+        console.log('🔄 Remote call:', fn.name, 'with args:', args);
+        
+        fn.apply(null, args.concat([
+          function(result, event){
+            console.log('📥 Remote response:', result, event);
+            if(!event.status){
+              console.error('❌ Remote error:', event);
+              callback({ success:false, message: (event.message || 'Remote error: ' + event.type) });
+            } else {
+              callback(result);
+            }
+          },
+          { escape:false, timeout: 30000 }
+        ]));
+      } catch(e){
+        console.error('💥 Remote call exception:', e);
+        callback({ success:false, message: 'Remote call error: ' + e.message });
+      }
+    }
+
+    // Global variables
+    let sessionToken = null;
+    let originalContact = null;
+
+    // Specific RA functions
+    function raSendCode(email, btn){
+      btnWorking(btn,true);
+      clearStatus($('statusRequest'));
+      
+      if(typeof ContactPortalController === 'undefined' || !ContactPortalController.sendVerificationCodeRemote){
+        btnWorking(btn,false);
+        showStatus($('statusRequest'), 'Controller method sendVerificationCodeRemote not found', 'error');
+        return;
+      }
+      
+      remoteCall(ContactPortalController.sendVerificationCodeRemote, [email], function(res){
+        btnWorking(btn,false);
+        if(res.success){
+          showStatus($('statusRequest'), res.message, 'success');
+          const m = res.message.match(/TEST CODE:\s*(\d{6})/);
+          if(m){
+            $('verifyEmail').value = email;
+            $('verifyCode').value = m[1];
+            $('verifyCode').focus();
+            setTimeout(autoVerifyIfReady, 500);
           }
-      }, 5000);
+          setTimeout(function(){
+            document.getElementById('card-verify').scrollIntoView({ behavior:'smooth', block:'start' });
+          }, 300);
+        } else {
+          showStatus($('statusRequest'), res.message || res.error, 'error');
+        }
+      });
+    }
+
+    function raVerify(email, code, btn){
+      btnWorking(btn,true);
+      clearStatus($('statusVerify'));
+      
+      if(typeof ContactPortalController === 'undefined' || !ContactPortalController.verifyAndGetContactRemote){
+        btnWorking(btn,false);
+        showStatus($('statusVerify'), 'Controller method verifyAndGetContactRemote not found', 'error');
+        return;
+      }
+      
+      remoteCall(ContactPortalController.verifyAndGetContactRemote, [email, code], function(res){
+        btnWorking(btn,false);
+        if(res.success){
+          showStatus($('statusVerify'), 'Verified! Contact loaded.', 'success');
+          sessionToken = res.token;
+          if(res.contact){
+            originalContact = JSON.parse(JSON.stringify(res.contact));
+            populateContact(res.contact);
+          }
+          showCardContact(true);
+          updateTokenChip();
+          setTimeout(function(){
+            document.getElementById('card-contact').scrollIntoView({ behavior:'smooth', block:'start' });
+          }, 300);
+        } else {
+          showStatus($('statusVerify'), res.message || res.error, 'error');
+        }
+      });
+    }
+
+    // FIXED: Enhanced raUpdate function with better error handling
+    function raUpdate(btn){
+      if(!sessionToken){
+        showStatus($('statusUpdate'),'No active session. Verify again.','error');
+        return;
+      }
+      
+      if(typeof ContactPortalController === 'undefined' || !ContactPortalController.updateContactRemote){
+        showStatus($('statusUpdate'), 'Controller method updateContactRemote not found', 'error');
+        return;
+      }
+      
+      const updates = {};
+      const fn = $('firstName').value.trim();
+      const ln = $('lastName').value.trim();
+      const em = $('emailField').value.trim();
+      
+      // Safe comparison with proper null checks
+      if(originalContact && fn !== (originalContact.FirstName || '')) {
+        updates.FirstName = fn;
+      }
+      if(originalContact && ln !== (originalContact.LastName || '')) {
+        updates.LastName = ln;
+      }
+      if(originalContact && em !== (originalContact.Email || '')) {
+        updates.Email = em;
+      }
+      
+      if(Object.keys(updates).length === 0){
+        showStatus($('statusUpdate'),'No changes to save.','warn');
+        return;
+      }
+      
+      console.log('🔄 Updating contact with:', updates);
+      console.log('🔑 Using token:', sessionToken ? sessionToken.substring(0, 20) + '...' : 'null');
+      
+      btnWorking(btn,true);
+      clearStatus($('statusUpdate'));
+      
+      // FIXED: Pass sessionToken as first parameter (it maps to 'signedToken' in Apex)
+      remoteCall(ContactPortalController.updateContactRemote, [sessionToken, JSON.stringify(updates)], function(res){
+        btnWorking(btn,false);
+        console.log('📥 Update response:', res);
+        
+        if(res && res.success){
+          showStatus($('statusUpdate'), res.message || 'Contact updated successfully.', 'success');
+          if(res.contact){
+            originalContact = JSON.parse(JSON.stringify(res.contact));
+            populateContact(res.contact);
+            if(res.contact.emailChangePending){
+              const pending = res.contact.pendingEmail || res.contact.Email;
+              showPendingEmailBlock(true, pending);
+            } else {
+              showPendingEmailBlock(false);
+            }
+          }
+        } else {
+          const errorMsg = (res && (res.message || res.error)) ? (res.message || res.error) : 'Update failed';
+          showStatus($('statusUpdate'), errorMsg, 'error');
+          console.error('❌ Update failed:', res);
+        }
+      });
+    }
+
+    function raConfirmEmail(btn){
+      if(!sessionToken){
+        showStatus($('statusEmailConfirm'),'Session lost. Verify again.','error');
+        return;
+      }
+      
+      if(typeof ContactPortalController === 'undefined' || !ContactPortalController.confirmEmailChangeRemote){
+        showStatus($('statusEmailConfirm'), 'Controller method confirmEmailChangeRemote not found', 'error');
+        return;
+      }
+      
+      const newEmail = $('pendingNewEmail').value;
+      const code = $('pendingEmailCode').value.trim();
+      if(!newEmail || !code){
+        showStatus($('statusEmailConfirm'),'Verification code required.','error');
+        return;
+      }
+      
+      btnWorking(btn,true);
+      clearStatus($('statusEmailConfirm'));
+      
+      remoteCall(ContactPortalController.confirmEmailChangeRemote, [sessionToken, newEmail, code], function(res){
+        btnWorking(btn,false);
+        if(res.success){
+          showStatus($('statusEmailConfirm'), res.message || 'Email updated successfully.', 'success');
+          if(res.contact && res.contact.Email){
+            $('emailField').value = res.contact.Email;
+            originalContact = JSON.parse(JSON.stringify(res.contact));
+          }
+          if(res.newToken) {
+            sessionToken = res.newToken;
+            updateTokenChip();
+          }
+          showPendingEmailBlock(false);
+        } else {
+          showStatus($('statusEmailConfirm'), res.message || res.error, 'error');
+        }
+      });
+    }
+
+    // ========= UI Functions =========
+    function populateContact(c){
+      if(!c) return;
+      $('firstName').value = c.FirstName || '';
+      $('lastName').value = c.LastName || '';
+      $('emailField').value = c.Email || '';
+    }
+    
+    function showCardContact(show){
+      $('card-contact').classList.toggle('hidden', !show);
+    }
+    
+    function updateTokenChip(){
+      if(!sessionToken){
+        $('tokenChip').textContent = '';
+        return;
+      }
+      $('tokenChip').textContent = sessionToken.substring(0,24) + '...';
+    }
+    
+    function showPendingEmailBlock(show, newEmail){
+      const block = $('pendingEmailBlock');
+      if(!block) return;
+      block.classList.toggle('hidden', !show);
+      if(show && newEmail){
+        $('pendingNewEmail').value = newEmail;
+        $('pendingEmailCode').value = '';
+        $('pendingEmailCode').focus();
+      }
+    }
+    
+    function resetToOriginal(){
+      if(originalContact) {
+        populateContact(originalContact);
+        showStatus($('statusUpdate'),'Fields reset to original values.','warn');
+      } else {
+        showStatus($('statusUpdate'),'No original data to reset to.','error');
+      }
+    }
+    
+    function pasteClipboard(el){
+      if(navigator.clipboard && navigator.clipboard.readText){
+        navigator.clipboard.readText().then(function(text){
+          el.value = text.trim();
+          el.focus();
+        }).catch(function(e){
+          console.log('Clipboard access failed:', e);
+          showStatus($('statusVerify'), 'Clipboard access denied. Please paste manually.', 'warn');
+        });
+      } else {
+        showStatus($('statusVerify'), 'Clipboard not supported. Please paste manually.', 'warn');
+      }
+    }
+    
+    function autoVerifyIfReady(){
+      const email = $('verifyEmail').value.trim();
+      const code = $('verifyCode').value.trim();
+      if(validateEmailFormat(email) && /^\d{6}$/.test(code)){
+        $('btnVerify').click();
+      }
+    }
+// Add this button to your Visualforce page temporarily
+function debugCurrentState() {
+  console.log('=== DEBUG CURRENT STATE ===');
+  console.log('Current token:', currentToken);
+  console.log('Token expiry:', new Date(tokenExpiryTime));
+  console.log('Is expired:', isTokenExpired());
+  
+  // Test the token directly
+  Visualforce.remoting.Manager.invokeAction(
+      'ContactPortalController.debugTokenState',
+      currentToken,
+      function(result, event) {
+          console.log('Debug result:', result);
+          if (result && result.debugInfo) {
+              alert('Debug Info:\n' + JSON.stringify(result.debugInfo, null, 2));
+          }
+      }
+  );
+}
+
+// Add this button to your Visualforce page temporarily
+function debugCurrentState() {
+  console.log('=== DEBUG CURRENT STATE ===');
+  console.log('Current token:', currentToken);
+  console.log('Token expiry:', new Date(tokenExpiryTime));
+  console.log('Is expired:', isTokenExpired());
+  
+  // Test the token directly
+  Visualforce.remoting.Manager.invokeAction(
+      'ContactPortalController.debugTokenState',
+      currentToken,
+      function(result, event) {
+          console.log('Debug result:', result);
+          if (result && result.debugInfo) {
+              alert('Debug Info:\n' + JSON.stringify(result.debugInfo, null, 2));
+          }
+      }
+  );
+}
+    // ========= Event Listeners =========
+    document.addEventListener('DOMContentLoaded', function(){
+      // Step 1 events
+      $('btnSendCode').addEventListener('click', function(){
+        const email = $('emailInput').value.trim();
+        if(!validateEmailFormat(email)){
+          showStatus($('statusRequest'),'Please enter a valid email address.','error');
+          $('emailInput').focus();
+          return;
+        }
+        raSendCode(email, $('btnSendCode'));
+      });
+
+      $('btnClearEmail').addEventListener('click', function(){
+        $('emailInput').value = '';
+        clearStatus($('statusRequest'));
+        $('emailInput').focus();
+      });
+
+      // Step 2 events
+      $('btnVerify').addEventListener('click', function(){
+        const email = $('verifyEmail').value.trim();
+        const code = $('verifyCode').value.trim();
+        if(!validateEmailFormat(email) || code.length !== 6){
+          showStatus($('statusVerify'),'Please provide valid email and 6-digit code.','error');
+          return;
+        }
+        raVerify(email, code, $('btnVerify'));
+      });
+
+      $('verifyCode').addEventListener('keyup', function(e){
+        if(e.key === 'Enter'){
+          autoVerifyIfReady();
+        }
+      });
+
+      $('btnPasteCode').addEventListener('click', function(){
+        pasteClipboard($('verifyCode'));
+        setTimeout(autoVerifyIfReady, 100);
+      });
+
+      // Step 3 events with enhanced debugging
+      $('btnUpdate').addEventListener('click', function(){
+        console.log('🔄 Save Changes clicked');
+        raUpdate($('btnUpdate'));
+      });
+      
+      $('btnResetFields').addEventListener('click', function(){
+        console.log('🔄 Reset Fields clicked');
+        resetToOriginal();
+      });
+      
+      $('btnLogout').addEventListener('click', function(){
+        console.log('🔄 Logout clicked');
+        sessionToken = null;
+        originalContact = null;
+        updateTokenChip();
+        showCardContact(false);
+        clearStatus($('statusUpdate'));
+        showStatus($('statusVerify'),'Logged out. Please verify again to continue.','warn');
+        $('emailInput').value = '';
+        $('verifyEmail').value = '';
+        $('verifyCode').value = '';
+        clearStatus($('statusRequest'));
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      });
+
+      // Email confirmation events
+      $('btnConfirmEmail').addEventListener('click', function(){
+        raConfirmEmail($('btnConfirmEmail'));
+      });
+      
+      $('btnCancelPending').addEventListener('click', function(){
+        showPendingEmailBlock(false);
+        clearStatus($('statusEmailConfirm'));
+      });
+
+      // Enter key shortcuts
+      $('emailInput').addEventListener('keyup', function(e){
+        if(e.key === 'Enter') $('btnSendCode').click();
+      });
+
+      $('verifyEmail').addEventListener('keyup', function(e){
+        if(e.key === 'Enter') autoVerifyIfReady();
+      });
+
+      $('pendingEmailCode').addEventListener('keyup', function(e){
+        if(e.key === 'Enter') $('btnConfirmEmail').click();
+      });
+
+      // Auto-focus first field
+      $('emailInput').focus();
+    });
   </script>
 </body>
-</html>
 </apex:page>
